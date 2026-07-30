@@ -1,32 +1,48 @@
-<script setup></script>
+<script setup>
+import { ref } from 'vue'
+
+const inputValue = ref('0')
+
+function pressNumber(numero) {
+  if (inputValue.value === '0') {
+    inputValue.value = numero
+  } else {
+    inputValue.value = inputValue.value + numero
+  }
+}
+
+function clear() {
+  inputValue.value = '0'
+}
+</script>
 
 <template>
   <main>
     <h1>Calculator</h1>
 
-    <input type="text" placeholder="Enter a number" />
+    <input type="text" :value="inputValue" placeholder="Enter a number" />
 
     <div class="buttons">
-      <button class="number">7</button>
-      <button class="number">8</button>
-      <button class="number">9</button>
-      <button class="operator">/</button>
-      <button class="number">4</button>
-      <button class="number">5</button>
-      <button class="number">6</button>
-      <button class="operator">x</button>
-      <button class="number">1</button>
-      <button class="number">2</button>
-      <button class="number">3</button>
-      <button class="operator">-</button>
-      <button class="number">0</button>
-      <button class="number">.</button>
-      <button class="result">=</button>
-      <button class="operator">+</button>
-      <button class="operator">%</button>
-      <button class="operator">()</button>
-      <button class="clear">Clear</button>
-      <button class="delete">Delete</button>
+      <button class="number" @click="pressNumber('7')">7</button>
+      <button class="number" @click="pressNumber('8')">8</button>
+      <button class="number" @click="pressNumber('9')">9</button>
+      <button class="operator" @click="pressNumber('/')">/</button>
+      <button class="number" @click="pressNumber('4')">4</button>
+      <button class="number" @click="pressNumber('5')">5</button>
+      <button class="number" @click="pressNumber('6')">6</button>
+      <button class="operator" @click="pressNumber('*')">x</button>
+      <button class="number" @click="pressNumber('1')">1</button>
+      <button class="number" @click="pressNumber('2')">2</button>
+      <button class="number" @click="pressNumber('3')">3</button>
+      <button class="operator" @click="pressNumber('-')">-</button>
+      <button class="number" @click="pressNumber('0')">0</button>
+      <button class="number" @click="pressNumber('.')">.</button>
+      <button class="result" @click="pressNumber('=')">=</button>
+      <button class="operator" @click="pressNumber('+')">+</button>
+      <button class="operator" @click="pressNumber('%')">%</button>
+      <button class="operator" @click="pressNumber('()')">()</button>
+      <button class="clear" @click="clear('C')">Clear</button>
+      <button class="delete" @click="pressNumber('DEL')">Delete</button>
     </div>
   </main>
 </template>
