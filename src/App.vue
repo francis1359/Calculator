@@ -2,12 +2,54 @@
 import { ref } from 'vue'
 
 const inputValue = ref('0')
+const firstNumber = ref(null)
+const operatorInicial = ref(null)
 
 function pressNumber(numero) {
   if (inputValue.value === '0') {
     inputValue.value = numero
   } else {
     inputValue.value = inputValue.value + numero
+  }
+}
+
+function pressOperator(operatorSymbol) {
+  firstNumber.value = inputValue.value
+  operatorInicial.value = operatorSymbol
+  inputValue.value = '0'
+}
+
+function calculate() {
+  if (firstNumber.value === null || operatorInicial.value === null) {
+    return
+  }
+
+  const firstNum = Number(firstNumber.value)
+  const secondNum = Number(inputValue.value)
+
+  if (operatorInicial.value === '+') {
+    inputValue.value = firstNum + secondNum
+  } else if (operatorInicial.value === '-') {
+    inputValue.value = firstNum - secondNum
+  } else if (operatorInicial.value === '*') {
+    inputValue.value = firstNum * secondNum
+  } else if (operatorInicial.value === '/') {
+    inputValue.value = firstNum / secondNum
+  }
+
+  firstNumber.value = null
+  operatorInicial.value = null
+}
+
+function porcentNumber() {
+  inputValue.value = Number(inputValue.value) / 100
+}
+
+function deleteNumber() {
+  inputValue.value = inputValue.value.slice(0, -1)
+
+  if (inputValue.value === '') {
+    inputValue.value = '0'
   }
 }
 
@@ -26,23 +68,23 @@ function clear() {
       <button class="number" @click="pressNumber('7')">7</button>
       <button class="number" @click="pressNumber('8')">8</button>
       <button class="number" @click="pressNumber('9')">9</button>
-      <button class="operator" @click="pressNumber('/')">/</button>
+      <button class="operator" @click="pressOperator('/')">/</button>
       <button class="number" @click="pressNumber('4')">4</button>
       <button class="number" @click="pressNumber('5')">5</button>
       <button class="number" @click="pressNumber('6')">6</button>
-      <button class="operator" @click="pressNumber('*')">x</button>
+      <button class="operator" @click="pressOperator('*')">x</button>
       <button class="number" @click="pressNumber('1')">1</button>
       <button class="number" @click="pressNumber('2')">2</button>
       <button class="number" @click="pressNumber('3')">3</button>
-      <button class="operator" @click="pressNumber('-')">-</button>
+      <button class="operator" @click="pressOperator('-')">-</button>
       <button class="number" @click="pressNumber('0')">0</button>
       <button class="number" @click="pressNumber('.')">.</button>
-      <button class="result" @click="pressNumber('=')">=</button>
-      <button class="operator" @click="pressNumber('+')">+</button>
-      <button class="operator" @click="pressNumber('%')">%</button>
-      <button class="operator" @click="pressNumber('()')">()</button>
+      <button class="result" @click="calculate()">=</button>
+      <button class="operator" @click="pressOperator('+')">+</button>
+      <button class="operator" @click="porcentNumber('%')">%</button>
+      <button class="operator" @click="pressOperator('()')">()</button>
       <button class="clear" @click="clear('C')">Clear</button>
-      <button class="delete" @click="pressNumber('DEL')">Delete</button>
+      <button class="delete" @click="deleteNumber()">Delete</button>
     </div>
   </main>
 </template>
