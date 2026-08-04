@@ -2,48 +2,116 @@
 import { ref } from 'vue'
 
 const inputValue = ref('0')
-const firstNumber = ref(null)
-const operatorInicial = ref(null)
 
 function pressNumber(numero) {
+  const lastOperator = Math.max(
+    inputValue.value.lastIndexOf('+'),
+    inputValue.value.lastIndexOf('-'),
+    inputValue.value.lastIndexOf('*'),
+    inputValue.value.lastIndexOf('/'),
+  )
+
+  const currentNumber = inputValue.value.slice(lastOperator + 1)
+
+  // No permitir dos puntos en el mismo número
+  if (numero === '.' && currentNumber.includes('.')) {
+    return
+  }
+
+  // Si el primer carácter es un punto, escribir 0.
+  if (inputValue.value === '0' && numero === '.') {
+    inputValue.value = '0.'
+    return
+  }
+
   if (inputValue.value === '0') {
     inputValue.value = numero
   } else {
-    inputValue.value = inputValue.value + numero
+    inputValue.value += numero
   }
 }
 
 function pressOperator(operatorSymbol) {
-  firstNumber.value = inputValue.value
-  operatorInicial.value = operatorSymbol
-  inputValue.value = '0'
-}
+  const lastCharacter = inputValue.value[inputValue.value.length - 1]
 
-function calculate() {
-  if (firstNumber.value === null || operatorInicial.value === null) {
+  if (inputValue.value === '0') {
+    if (operatorSymbol === '-') {
+      inputValue.value = '-'
+    }
+
     return
   }
 
-  const firstNum = Number(firstNumber.value)
-  const secondNum = Number(inputValue.value)
-
-  if (operatorInicial.value === '+') {
-    inputValue.value = firstNum + secondNum
-  } else if (operatorInicial.value === '-') {
-    inputValue.value = firstNum - secondNum
-  } else if (operatorInicial.value === '*') {
-    inputValue.value = firstNum * secondNum
-  } else if (operatorInicial.value === '/') {
-    inputValue.value = firstNum / secondNum
+  if (
+    lastCharacter === '+' ||
+    lastCharacter === '-' ||
+    lastCharacter === '*' ||
+    lastCharacter === '/'
+  ) {
+    return
   }
 
-  firstNumber.value = null
-  operatorInicial.value = null
+  inputValue.value += operatorSymbol
 }
 
-function porcentNumber() {
-  inputValue.value = Number(inputValue.value) / 100
+function calculate() {
+  let currentNumber = ''
+  const numbers = []
+  const operators = []
+
+  for (let i = 0; i < inputValue.value.length; i++) {
+    const character = inputValue.value[i]
+
+    if (character === '+' || character === '-' || character === '*' || character === '/') {
+      numbers.push(Number(currentNumber))
+      operators.push(character)
+      currentNumber = ''
+    } else {
+      currentNumber += character
+    }
+  }
+
+  if (currentNumber === '') {
+    return
+  }
+
+  numbers.push(Number(currentNumber))
+
+  console.log(numbers)
+  console.log(operators)
+
+  for (let i = 0; i < operators.length; i++) {
+    if (operators[i] === '*') {
+      numbers[i] = numbers[i] * numbers[i + 1]
+
+      numbers.splice(i + 1, 1)
+      operators.splice(i, 1)
+
+      i--
+    } else if (operators[i] === '/') {
+      numbers[i] = numbers[i] / numbers[i + 1]
+
+      numbers.splice(i + 1, 1)
+      operators.splice(i, 1)
+
+      i--
+    }
+  }
+
+  let result = numbers[0]
+
+  for (let i = 0; i < operators.length; i++) {
+    if (operators[i] === '+') {
+      result += numbers[i + 1]
+    } else if (operators[i] === '-') {
+      result -= numbers[i + 1]
+    }
+  }
+
+  inputValue.value = result.toString()
 }
+
+function porcentange() {}
 
 function deleteNumber() {
   inputValue.value = inputValue.value.slice(0, -1)
@@ -81,9 +149,9 @@ function clear() {
       <button class="number" @click="pressNumber('.')">.</button>
       <button class="result" @click="calculate()">=</button>
       <button class="operator" @click="pressOperator('+')">+</button>
-      <button class="operator" @click="porcentNumber('%')">%</button>
+      <button class="operator" @click="porcentange('%')">%</button>
       <button class="operator" @click="pressOperator('()')">()</button>
-      <button class="clear" @click="clear('C')">Clear</button>
+      <button class="clear" @click="clear">Clear</button>
       <button class="delete" @click="deleteNumber()">Delete</button>
     </div>
   </main>
@@ -93,6 +161,14 @@ function clear() {
 main {
   width: 400px;
   margin: 0 auto;
+}
+
+.operation {
+  width: 100%;
+  text-align: right;
+  color: gray;
+  font-size: 18px;
+  margin-bottom: 5px;
 }
 
 input {
